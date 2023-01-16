@@ -5,7 +5,8 @@ import torch
 
 from isegm.utils import exp
 from isegm.inference import utils
-from interactive_demo.app import InteractiveDemoApp
+from interactive_omni_anno.app import InteractiveDemoApp
+#from interactive_demo.app import InteractiveDemoApp
 
 
 def main():
@@ -36,12 +37,17 @@ def parse_args():
     parser.add_argument('--cpu', action='store_true', default=False,
                         help='Use only CPU for inference.')
 
+    parser.add_argument("--downsample", type=int, default=1, help="downsample image to reduce memory usage")
+
     parser.add_argument('--limit-longest-size', type=int, default=800,
                         help='If the largest side of an image exceeds this value, '
                              'it is resized so that its largest side is equal to this value.')
 
     parser.add_argument('--cfg', type=str, default="config.yml",
                         help='The path to the config file.')
+    
+    parser.add_argument("--dir", type=str, default="", help="The path to sequence needed to be annotated")
+    
 
     args = parser.parse_args()
     if args.cpu:
