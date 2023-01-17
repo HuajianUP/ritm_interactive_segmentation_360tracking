@@ -142,7 +142,7 @@ class InteractiveController:
             'predictor': self.predictor.get_states()
         })
         y = self.imgh - y if y > self.imgh else y
-        x = self.imgh - x if x > self.imgw else x
+        x = self.imgw - x if x > self.imgw else x
 
         click = clicker.Click(is_positive=is_positive, coords=(y, x))
         self.clicker.add_click(click)
