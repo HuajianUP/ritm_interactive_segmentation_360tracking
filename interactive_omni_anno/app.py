@@ -267,8 +267,8 @@ class InteractiveDemoApp(ttk.Frame):
             #print("bbox_init")
             bbox = np.loadtxt(self.inti_bboxs_files[self.current_frame_id])
             lx, ly, bbox_w, bbox_h = bbox
-            center_x = int(lx+bbox_w*0.5)
-            center_y = int(ly+bbox_h*0.5)
+            center_x = int(lx+bbox_w*0.5)//self.downsample
+            center_y = int(ly+bbox_h*0.5)//self.downsample
             #sample_point_x = center_x if center_x < img_w else center_x - img_w
             #sample_point_y = center_y if center_y < img_h else center_y - img_h
             self.controller.add_click(center_x, center_y, is_positive=True)
