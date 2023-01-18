@@ -48,6 +48,9 @@ class InteractiveDemoApp(ttk.Frame):
         #master.bind('z', lambda event: self.controller.partially_finish_object())
         # undo
         master.bind('z', lambda event: self.controller.undo_click())
+        master.bind('q', lambda event: self.controller.undo_click()) #<KeyPress-Shift_L>
+        master.bind('r', lambda event: self._save_visit_record())
+
         # 
         master.bind('f', lambda event: self._next_frame_callback())
         master.bind('e', lambda event: self._last_frame_callback())
@@ -56,7 +59,9 @@ class InteractiveDemoApp(ttk.Frame):
         master.bind('c', lambda event: self._canvas_zoomout_callback())
         master.bind('<space>', lambda event: self._canvas_focus_callback())
 
-
+    def _save_visit_record(self):
+        with open(self.visit_record_files, "w") as outfile:
+            json.dump(self.visit_record, outfile)
 
     def _load_sequences(self, dir):
         self.dir = dir
@@ -200,7 +205,7 @@ class InteractiveDemoApp(ttk.Frame):
         target_image = glob.glob(os.path.join(self.dir, self.sequences[self.current_sequence_id], "*.jpg"))
         #print(target_image);exit()
         image1 = Image.open(target_image[0])
-        image1 = image1.resize((160, 160), Image.ANTIALIAS)
+        image1 = image1.resize((170, 170), Image.ANTIALIAS)
         tk_img = ImageTk.PhotoImage(image1)
         self.target_label.configure(image=tk_img)
         self.target_label.image = tk_img
@@ -269,6 +274,7 @@ class InteractiveDemoApp(ttk.Frame):
             lx, ly, bbox_w, bbox_h = bbox
             center_x = int(lx+bbox_w*0.5)//self.downsample
             center_y = int(ly+bbox_h*0.5)//self.downsample
+
             #sample_point_x = center_x if center_x < img_w else center_x - img_w
             #sample_point_y = center_y if center_y < img_h else center_y - img_h
             self.controller.add_click(center_x, center_y, is_positive=True)
@@ -410,6 +416,10 @@ class InteractiveDemoApp(ttk.Frame):
                         state=tk.NORMAL, command=self._next_sequence_callback)
         self.next_sequence_button.grid(row=1, column=3, pady=0)
 
+        self.save_record_button = \
+            FocusButton(self.sequences_options_frame, text='Save visit record', bg='#ea9999', fg='black', width=14, height=1,
+                        state=tk.NORMAL, command=self._save_visit_record)
+        self.save_record_button.grid(row=2, column=2, columnspan=2, pady=0)
 
         ##############################################
         self.frames_options_frame = FocusLabelFrame(master, text="Frames management")
@@ -477,13 +487,14 @@ class InteractiveDemoApp(ttk.Frame):
         tk.Label(self.info_frame, text="Positive: <left click>").grid(row=0, pady=1, sticky='w')
         tk.Label(self.info_frame, text="Negative: <right click>").grid(row=1, pady=1, sticky='w')
         tk.Label(self.info_frame, text="Undo: <z>").grid(row=2, pady=1, sticky='w')
-        tk.Label(self.info_frame, text="Finish/new object: <n>").grid(row=3, pady=1, sticky='w')
-        tk.Label(self.info_frame, text="Next frame: <f>").grid(row=4, pady=1, sticky='w')
-        tk.Label(self.info_frame, text="Last frame: <e>").grid(row=5, pady=1, sticky='w')
-        tk.Label(self.info_frame, text="Auto zoom in: <space>").grid(row=6, pady=1, sticky='w')
-        tk.Label(self.info_frame, text="Auto zoom out: <c>").grid(row=7, pady=1, sticky='w')
-        tk.Label(self.info_frame, text="Zoom: <mouse wheel>").grid(row=8, pady=1, sticky='w')
-        tk.Label(self.info_frame, text="Scroll image: <w a s d>").grid(row=9, pady=1, sticky='w')
+        tk.Label(self.info_frame, text="Save visit record: <r>").grid(row=3, pady=1, sticky='w')
+        tk.Label(self.info_frame, text="Finish/new object: <n>").grid(row=4, pady=1, sticky='w')
+        tk.Label(self.info_frame, text="Next frame: <f>").grid(row=5, pady=1, sticky='w')
+        tk.Label(self.info_frame, text="Last frame: <e>").grid(row=6, pady=1, sticky='w')
+        tk.Label(self.info_frame, text="Auto zoom in: <space>").grid(row=7, pady=1, sticky='w')
+        tk.Label(self.info_frame, text="Auto zoom out: <c>").grid(row=8, pady=1, sticky='w')
+        tk.Label(self.info_frame, text="Zoom: <mouse wheel>").grid(row=9, pady=1, sticky='w')
+        tk.Label(self.info_frame, text="Scroll image: <w a s d>").grid(row=10, pady=1, sticky='w')
 
 
 
@@ -663,3 +674,4 @@ class InteractiveDemoApp(ttk.Frame):
             all_checked = all_checked and widget._check_bounds(widget.get(), '-1')
 
         return all_checked
+
